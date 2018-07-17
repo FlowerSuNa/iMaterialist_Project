@@ -72,21 +72,63 @@ print('Total Image in the test : ', total_images)       # 39,706
 print('Total Labels in the test : ', total_labels)      # 0
 
 
+#
+def distribution_graph(annotations, name):
+    labels = Counter(annotations)
 
-train_file = requests.get()
+    x = list(labels.keys())
+    y = list(labels.values())
+
+    trace = go.Bar(x=x, y=y, opacity=0.8, name='year count', marker=dict(color='rgba(20,20,20,1)'))
+    layout = dict(width=800, title='Distribution of different labels in the {} dataset'.format(name), 
+                  legend=dict(orientation='h'))
+    fig = go.Figure(data=[trace], layout=layout)
+    iplot(fig)
+
+
+distribution_graph(train_annotations, 'train')
+distribution_graph(valid_annotations, 'valid')
 
 
 #
-train_labels = Counter(train_annotations)
+def most_common_labels(labels, name):
+    temps = labels.most_common(10)
+    label = ['Label-' + str(x[0] for x in temps)]
+    value = [x[1] for x in temps]
+    
+    trace = go.Bar(x=label, y=value, opacity=0.7, name='year count', marker=dict(color='rgba(120,120,120,0.8)'))
+    layout = dict(height=400, title='Top 10 Labels in the {} dataset'.format(name), legend=dict(orientation='h'))
+    
+    fig = go.Figure(data=[trace], layout=layout)
+    iplot(fig)
+    
+    
+most_common_labels(train_labels, 'train')
+most_common_labels(valid_labels, 'valid')
 
-x = list(train_labels.keys())
-y = list(train_labels.values())
 
-trace = go.Bar(x=x, y=y, opacity=0.8, name='count', marker=dict(color='rgba(20,20,20,1)'))
-layout = dict(width=800, title='Distribution of different labels in the train dataset', 
-              legend=dict(orientation='h'))
-fig = go.Figure(data=[trace], layout=layout)
-iplot(fig)
+#
+def get_images_for_labels(label_list, data):
+    image_Id = []
+    
+    for each in data['annotations']:
+        if all(x in each['label_list'] for x in label_list):
+            image_Id.append(each['imageId'])
+            
+            if len(image_Id) == 2:
+                break
+    
+    image_url = []
+    
+    for each in data['images']:
+        if each['imageId'] in image_Id:
+            image_url.append(each['url'])
+    
+    return image_url
+
+
+temps = train_labels.most_common(10)
+labels = 
 
 
 #
